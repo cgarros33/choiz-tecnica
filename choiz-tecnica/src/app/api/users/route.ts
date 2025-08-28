@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase, supabaseAdmin } from "@/app/lib/supabaseClient";
-
+import { validateRole } from "@/app/lib/middlewares";
+import { createClient } from "@supabase/supabase-js";
 
 /**
  * @openapi
@@ -20,6 +21,19 @@ import { supabase, supabaseAdmin } from "@/app/lib/supabaseClient";
  *     description: Retrieves information about the authenticated user based on the provided JWT token.
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: user_id
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Optional ID of the user to fetch (only available to ADMIN and DOCTOR roles)
+ *       - in: query
+ *         name: doctor_id
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Optional ID of the doctor to filter by (only available to ADMIN role)
  *     responses:
  *       200:
  *         description: Successful response with user info
@@ -51,6 +65,9 @@ import { supabase, supabaseAdmin } from "@/app/lib/supabaseClient";
  */
 
 export async function GET(req: NextRequest) {
+    const url = new URL(req.url);
+    const user_id = url.searchParams.get("user_id");
+    const doctor_id = url.searchParams.get("doctor_id");
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace("Bearer ", "");
 
@@ -60,10 +77,27 @@ export async function GET(req: NextRequest) {
 
     if (error || !user.user) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-    // Optionally fetch full usuario row
-    const { data: usuario } = await supabase.from("usuario").select("*").eq("id_usuario", user.user.id).single();
+    
 
-    return NextResponse.json({ message: "Authenticated", usuario });
+    const { data: usuario } = await supabaseAdmin.from("usuario").select("*").eq("id_usuario", user.user.id).single();
+
+
+    let query = supabaseAdmin.from("usuario").select("*");
+
+    if (usuario.rol == "USER") {
+        return NextResponse.json({ usuario });
+    }
+    if (user_id) query = query.eq("id_usuario", user_id);
+    if (usuario.rol == "ADMIN" && doctor_id) {
+        query = query.eq("doctor_id", doctor_id);
+    } else if (usuario.rol == "DOCTOR") {
+        query = query.eq("doctor_id", usuario.id_usuario);
+    }
+    const { data: usuarios, error: dataError } = await query;
+    if (dataError) return NextResponse.json({ error: dataError.message }, { status: 500 });
+
+    return NextResponse.json({ usuarios });
+
 }
 
 /**
@@ -133,6 +167,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     const body = await req.json();
     const { email, password } = body;
+
+    try {
+        await validateRole(body.rol);
+    } catch (err: any) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+    }
 
     const { data, error } = await supabase.auth.signUp({
         email,
