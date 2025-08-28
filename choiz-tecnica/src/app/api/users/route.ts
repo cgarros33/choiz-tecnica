@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase, supabaseAdmin } from "@/app/lib/supabaseClient";
 import { validateRole } from "@/app/lib/middlewares";
-import { createClient } from "@supabase/supabase-js";
 
 /**
  * @openapi

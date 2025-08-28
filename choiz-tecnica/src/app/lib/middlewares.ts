@@ -10,6 +10,17 @@ async function validateRole(rol: string) {
   }
 }
 
+function requireRole(allowedRoles: Role[]) {
+  return (handler: (req: Request, ctx: { user: any }) => Promise<Response>) => 
+    async (req: Request, ctx: { user: any }) => {
+      const user = ctx.user;
+      if (!user || !allowedRoles.includes(user.rol as Role)) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+      }
+      return handler(req, ctx);
+  };
+}
 
-export { validateRole };
+
+export { validateRole,requireRole};
 
