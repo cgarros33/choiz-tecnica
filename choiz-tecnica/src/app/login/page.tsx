@@ -50,7 +50,7 @@ export default function LoginPage() {
                 console.log("Login successful")
                 window.location.href = "/"
             } else {
-                console.error("Login failed")
+                console.log("Login failed")
             }
         } catch (error) {
             console.error("Login error:", error)
