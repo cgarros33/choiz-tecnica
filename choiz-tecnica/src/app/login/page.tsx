@@ -43,12 +43,8 @@ export default function LoginPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                
-                console.log("SAPE")
                 localStorage.removeItem("jwt")
                 localStorage.removeItem("user")
-                localStorage.removeItem("data")
-                localStorage.setItem("data", JSON.stringify(data));
                 localStorage.setItem("jwt", data.access_token);
                 localStorage.setItem("user", JSON.stringify(data.usuario));
                 console.log("Login successful")

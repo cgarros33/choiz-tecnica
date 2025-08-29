@@ -76,7 +76,7 @@ export default function Home() {
 
   const handleLogout = () => {
     localStorage.removeItem("jwt")
-    localStorage.removeItem("usuario")
+    localStorage.removeItem("user")
     setIsAuthenticated(false)
     setCurrentUser(null)
     setUsuarios([])
