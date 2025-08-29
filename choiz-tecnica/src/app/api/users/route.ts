@@ -83,8 +83,17 @@ export async function GET(req: NextRequest) {
 
     let query = supabaseAdmin.from("usuario").select("*");
 
+
+
     if (usuario.rol == "USER") {
-        return NextResponse.json({ usuario });
+        return NextResponse.json({
+            usuario: {
+            nombre: usuario.nombre,
+            apellido: usuario.apellido,
+            email: usuario.email,
+            rol: usuario.rol,
+            }
+        });
     }
     if (user_id) query = query.eq("id_usuario", user_id);
     if (usuario.rol == "ADMIN" && doctor_id) {
@@ -95,7 +104,14 @@ export async function GET(req: NextRequest) {
     const { data: usuarios, error: dataError } = await query;
     if (dataError) return NextResponse.json({ error: dataError.message }, { status: 500 });
 
-    return NextResponse.json({ usuarios });
+    const filteredUsuarios = usuarios?.map((u: any) => ({
+        nombre: u.nombre,
+        apellido: u.apellido,
+        email: u.email,
+        rol: u.rol,
+    }));
+
+    return NextResponse.json({ usuarios: filteredUsuarios });
 
 }
 
