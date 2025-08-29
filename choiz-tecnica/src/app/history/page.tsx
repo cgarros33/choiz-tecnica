@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Stethoscope, Search, Plus, FileText, LogOut } from "lucide-react"
+import { NavigationDropdown } from "@/components/navigation-dropdown"
+
 
 interface PreguntaMedica {
   pregunta: string
@@ -148,10 +150,8 @@ export default function HistoryPage() {
             <div className="bg-primary/10 p-2 rounded-full">
               <FileText className="h-6 w-6 text-primary" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Medical History</h1>
-              <p className="text-muted-foreground">View and manage medical records</p>
-            </div>
+            
+                <NavigationDropdown currentPage="history" />
           </div>
           {canCreateHistory && (
             <Button onClick={() => setShowCreateForm(!showCreateForm)} className="ml-auto items-center gap-2">

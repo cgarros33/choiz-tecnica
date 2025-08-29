@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Stethoscope, Search, LogOut, User, Users } from "lucide-react"
+import { NavigationDropdown } from "@/components/navigation-dropdown"
 
 interface Usuario {
   nombre: string
@@ -134,10 +135,7 @@ export default function Home() {
             <div className="bg-primary/10 p-2 rounded-full">
               <Stethoscope className="h-6 w-6 text-primary" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Medical Dashboard</h1>
-              <p className="text-muted-foreground">Welcome back, {currentUser?.nombre}</p>
-            </div>
+            <NavigationDropdown currentPage="dashboard" />
           </div>
           <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2 bg-transparent">
             <LogOut className="h-4 w-4" />
