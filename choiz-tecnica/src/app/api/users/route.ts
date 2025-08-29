@@ -22,13 +22,13 @@ import { validateRole } from "@/app/lib/middlewares";
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: user_id
+ *         name: user_name
  *         required: false
  *         schema:
  *           type: string
  *         description: Optional ID of the user to fetch (only available to ADMIN and DOCTOR roles)
  *       - in: query
- *         name: doctor_id
+ *         name: doctor_name
  *         required: false
  *         schema:
  *           type: string
@@ -65,8 +65,8 @@ import { validateRole } from "@/app/lib/middlewares";
 
 export async function GET(req: NextRequest) {
     const url = new URL(req.url);
-    const user_id = url.searchParams.get("user_id");
-    const doctor_id = url.searchParams.get("doctor_id");
+    const user_name = url.searchParams.get("user-name");
+    const doctor_name = url.searchParams.get("doctor-name");
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace("Bearer ", "");
 
@@ -87,17 +87,18 @@ export async function GET(req: NextRequest) {
 
     if (usuario.rol == "USER") {
         return NextResponse.json({
-            usuario: {
+            usuarios: [{
             nombre: usuario.nombre,
             apellido: usuario.apellido,
             email: usuario.email,
             rol: usuario.rol,
-            }
+            }]
         });
     }
-    if (user_id) query = query.eq("id_usuario", user_id);
-    if (usuario.rol == "ADMIN" && doctor_id) {
-        query = query.eq("doctor_id", doctor_id);
+    if (user_name) query = query.ilike("concat(nombre, ' ', apellido)", `%${user_name}%`);
+    if (usuario.rol == "ADMIN" && doctor_name) {
+        query = query.ilike("concat(doctor.nombre, ' ', doctor.apellido)", `%${doctor_name}%`);
+
     } else if (usuario.rol == "DOCTOR") {
         query = query.eq("doctor_id", usuario.id_usuario);
     }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/app/lib/supabaseClient';
+import { supabase, supabaseAdmin } from '@/app/lib/supabaseClient';
 
 
 
@@ -59,7 +59,7 @@ import { supabase } from '@/app/lib/supabaseClient';
  */
 
 
-export async function POST(req: NextRequest) {
+/* export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 401 });
   }
 
+  
   return NextResponse.json({
     access_token: data.session?.access_token,
     refresh_token: data.session?.refresh_token,
@@ -78,5 +79,37 @@ export async function POST(req: NextRequest) {
       id_usuario: data.user.id,
       email: data.user.email,
     },
+  });
+}
+ */
+
+export async function POST(req: NextRequest) {
+  const { email, password } = await req.json();
+
+  // First authenticate
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error || !data.user) {
+    return NextResponse.json({ error: error?.message ?? "Invalid login" }, { status: 401 });
+  }
+
+  // Fetch full user from your usuario table
+  const { data: usuario, error: usuarioError } = await supabaseAdmin
+    .from("usuario")
+    .select("*")
+    .eq("id_usuario", data.user.id)
+    .single();
+
+  if (usuarioError) {
+    return NextResponse.json({ error: usuarioError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({
+    access_token: data.session?.access_token,
+    refresh_token: data.session?.refresh_token,
+    usuario, // return full row from usuario table
   });
 }

@@ -13,22 +13,22 @@ import { Stethoscope, UserPlus } from "lucide-react"
 interface RegisterFormData {
   email: string
   password: string
-  firstName: string
-  lastName: string
-  birthDate: string
-  address: string
-  role: "user" | "doctor" | "administrator" | ""
+  nombre: string
+  apellido: string
+  fecha_nacimiento: string
+  direccion: string
+  rol: "user" | "doctor" | "administrator" | ""
 }
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<RegisterFormData>({
     email: "",
     password: "",
-    firstName: "",
-    lastName: "",
-    birthDate: "",
-    address: "",
-    role: "",
+    nombre: "",
+    apellido: "",
+    fecha_nacimiento: "",
+    direccion: "",
+    rol: "",
   })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -44,8 +44,7 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      // This is where you would make your POST request to your API
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,10 +53,9 @@ export default function RegisterPage() {
       })
 
       if (response.ok) {
-        // Handle successful registration
         console.log("Registration successful")
+        window.location.href = "/login"
       } else {
-        // Handle registration error
         console.error("Registration failed")
       }
     } catch (error) {
@@ -92,25 +90,25 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="nombre">First Name</Label>
                   <Input
-                    id="firstName"
+                    id="nombre"
                     type="text"
                     placeholder="John"
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    value={formData.nombre}
+                    onChange={(e) => handleInputChange("nombre", e.target.value)}
                     required
                     className="bg-input border-border"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="apellido">Last Name</Label>
                   <Input
-                    id="lastName"
+                    id="apellido"
                     type="text"
                     placeholder="Doe"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    value={formData.apellido}
+                    onChange={(e) => handleInputChange("apellido", e.target.value)}
                     required
                     className="bg-input border-border"
                   />
@@ -144,40 +142,44 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="birthDate">Birth Date</Label>
+                <Label htmlFor="fecha_nacimiento">Birth Date</Label>
                 <Input
-                  id="birthDate"
+                  id="fecha_nacimiento"
                   type="date"
-                  value={formData.birthDate}
-                  onChange={(e) => handleInputChange("birthDate", e.target.value)}
+                  value={formData.fecha_nacimiento}
+                  onChange={(e) => handleInputChange("fecha_nacimiento", e.target.value)}
                   required
                   className="bg-input border-border"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="direccion
+        ">Address</Label>
                 <Input
-                  id="address"
+                  id="direccion
+            "
                   type="text"
                   placeholder="123 Main St, City, State 12345"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange("address", e.target.value)}
+                  value={formData.direccion
+            
+                  }
+                  onChange={(e) => handleInputChange("direccion", e.target.value)}
                   required
                   className="bg-input border-border"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)} required>
+                <Label htmlFor="rol">Role</Label>
+                <Select value={formData.rol} onValueChange={(value) => handleInputChange("rol", value)} required>
                   <SelectTrigger className="bg-input border-border">
-                    <SelectValue placeholder="Select your role" />
+                    <SelectValue placeholder="Select your rol" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="doctor">Doctor</SelectItem>
-                    <SelectItem value="administrator">Administrator</SelectItem>
+                    <SelectItem value="USER">User</SelectItem>
+                    <SelectItem value="DOCTOR">Doctor</SelectItem>
+                    <SelectItem value="ADMIN">Administrator</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
